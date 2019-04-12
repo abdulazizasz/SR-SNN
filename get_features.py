@@ -35,7 +35,7 @@ def build_features():
                 writer.writerow(inputs.split())
 
 if __name__ == "__main__":
-    build = False
+    build = True
     if build:
         build_features()
     data = pd.read_csv('./data.csv')
