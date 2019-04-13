@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd 
 
 # Inspired by https://towardsdatascience.com/extract-features-of-music-75a3f9bc265d
+# https://github.com/moebg/spoken-digit-recognition/blob/master/src/spoken_digit.py
+
 def build_features():
     # generating a dataset
     header = 'filename'
@@ -25,6 +27,13 @@ def build_features():
             filename = f'./datasets/{label}/{file}'
             x , sr = librosa.load(filename)
             mfcc = librosa.feature.mfcc(x , sr)
+            # Check the frames. Make sure all have 40 frames 
+            if mfcc.shape[1] > 20:
+                mfcc = mfcc[:, 0:20]
+            else:
+                mfcc = np.pad(mfcc, ((0, 0), (0, 20 - mfcc.shape[1])),
+                               mode='constant', constant_values=0)
+           
             inputs = f' {filename} '
             for feature in mfcc:
                 inputs += f' {np.mean(feature)} '
@@ -34,6 +43,7 @@ def build_features():
                 writer = csv.writer(file)
                 writer.writerow(inputs.split())
 
+
 if __name__ == "__main__":
     build = True
     if build:
@@ -42,4 +52,5 @@ if __name__ == "__main__":
     
     labels = data.iloc[:,-1]
     features = np.array(data.iloc[:,1:-1])
-    print(features[0].shape)      
+    print(features.shape[0])      
+
